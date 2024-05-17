@@ -1,0 +1,9 @@
+<!-- list.html -->
+<ul>
+  <li th:each="prediction : ${predictions}">
+    <span th:text="${prediction.match.homeTeam.name}">Home Team</span> vs
+    <span th:text="${prediction.match.visitorTeam.name}">Visitor Team</span>:
+    <span th:text="${prediction.homeScore}">Home Score</span> -
+    <span th:text="${prediction.visitorScore}">Visitor Score</span>
+  </li>
+</ul>

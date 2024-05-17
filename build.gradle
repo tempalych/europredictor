@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'org.springframework.boot' version '3.2.5'
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+java {
+    sourceCompatibility = '21'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
+
+    runtimeOnly "org.postgresql:postgresql:${postgresVersion}"
+
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+
+    testImplementation "org.spockframework:spock-spring:${groovyVersion}"
+    testImplementation ("org.springframework.boot:spring-boot-starter-test") {
+        exclude group: "org.junit.vintage', module: 'junit-vintage-engine"
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make Predictions</title>
+    <script src="https://unpkg.com/htmx.org@1.5.0"></script>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<h1>Make Predictions</h1>
+<form hx-post="/predictions" hx-target="#prediction-results" hx-swap="innerHTML">
+    <div>
+        <label for="match">Match:</label>
+        <select name="matchId" id="match">
+            <option th:each="match : ${matches}" th:value="${match.id}" th:text="${match.homeTeam.name} + ' vs ' + ${match.visitorTeam.name}"></option>
+        </select>
+    </div>
+    <div>
+        <label for="homeScore">Home Team Score:</label>
+        <input type="number" id="homeScore" name="homeScore" required>
+    </div>
+    <div>
+        <label for="visitorScore">Visitor Team Score:</label>
+        <input type="number" id="visitorScore" name="visitorScore" required>
+    </div>
+    <div>
+        <button type="submit">Submit Prediction</button>
+    </div>
+</form>
+<div id="prediction-results">
+    <!-- Predictions will be injected here -->
+</div>
+</body>
+</html>

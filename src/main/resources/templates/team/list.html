@@ -1,0 +1,6 @@
+<!-- list.html -->
+<ul>
+    <li th:each="team : ${teams}">
+        <span th:text="${team.id}">User Name</span> - <span th:text="${team.name}">User Email</span>
+    </li>
+</ul>
