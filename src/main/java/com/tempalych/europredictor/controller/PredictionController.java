@@ -5,7 +5,8 @@ import com.tempalych.europredictor.model.repository.MatchRepository;
 import com.tempalych.europredictor.model.repository.PredictionRepository;
 import com.tempalych.europredictor.model.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,10 @@ public class PredictionController {
                                    @RequestParam Integer homeScore,
                                    @RequestParam Integer visitorScore,
                                    Model model) {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        var username = ((UserDetails) auth.getPrincipal()).getUsername();
+        var user = userRepository.findByUsername(username);
+
         var match = matchRepository.findById(matchId);
         var prediction = Prediction.builder()
                 .user(userRepository.getUser())
