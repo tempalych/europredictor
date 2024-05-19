@@ -1,12 +1,8 @@
 package com.tempalych.europredictor.controller;
 
-import com.tempalych.europredictor.model.entity.Prediction;
-import com.tempalych.europredictor.model.repository.MatchRepository;
-import com.tempalych.europredictor.model.repository.PredictionRepository;
-import com.tempalych.europredictor.model.repository.UserRepository;
+import com.tempalych.europredictor.service.MatchService;
+import com.tempalych.europredictor.service.PredictionService;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,14 +13,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class PredictionController {
 
-    MatchRepository matchRepository;
-    PredictionRepository predictionRepository;
-    UserRepository userRepository;
+    PredictionService predictionService;
+    MatchService matchService;
 
     @GetMapping("/prediction-form")
     public String showPredictionForm(Model model) {
-        var matches = matchRepository.findAll();
+        var matches = matchService.getAllAvailableMatches();
         model.addAttribute("matches", matches);
+        var userPredictions = predictionService.getCurrentUserPredictions();
+        model.addAttribute("predictions", userPredictions);
         return "prediction/form";
     }
 
@@ -33,19 +30,10 @@ public class PredictionController {
                                    @RequestParam Integer homeScore,
                                    @RequestParam Integer visitorScore,
                                    Model model) {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        var username = ((UserDetails) auth.getPrincipal()).getUsername();
-        var user = userRepository.findByUsername(username);
 
-        var match = matchRepository.findById(matchId);
-        var prediction = Prediction.builder()
-                .user(userRepository.getUser())
-                .match(match)
-                .homeScore(homeScore)
-                .visitorScore(visitorScore)
-                .build();
-        predictionRepository.save(prediction);
-        model.addAttribute("predictions", predictionRepository.findAll());
+        predictionService.newPrediction(matchId, homeScore, visitorScore);
+        var predictions = predictionService.getCurrentUserPredictions();
+        model.addAttribute("predictions", predictions);
         return "prediction/list";
     }
 }

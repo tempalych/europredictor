@@ -20,4 +20,7 @@ public class Team {
 
     @Column
     private String name;
+
+    @Column
+    private String group;
 }

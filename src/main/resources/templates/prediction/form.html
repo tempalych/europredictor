@@ -18,7 +18,7 @@
     <div>
         <label for="match">Match:</label>
         <select name="matchId" id="match">
-            <option th:each="match : ${matches}" th:value="${match.id}" th:text="${match.homeTeam.name} + ' vs ' + ${match.visitorTeam.name}"></option>
+            <option th:each="match : ${matches}" th:value="${match.id}" th:text="${match.homeTeam.group} + ': ' + ${match.homeTeam.name} + ' vs ' + ${match.visitorTeam.name}"></option>
         </select>
     </div>
     <div>
@@ -34,7 +34,14 @@
     </div>
 </form>
 <div id="prediction-results">
-    <!-- Predictions will be injected here -->
+    <ul>
+        <li th:each="prediction : ${predictions}">
+            <span th:text="${prediction.match.homeTeam.name}">Home Team</span> vs
+            <span th:text="${prediction.match.visitorTeam.name}">Visitor Team</span>:
+            <span th:text="${prediction.homeScore}">Home Score</span> -
+            <span th:text="${prediction.visitorScore}">Visitor Score</span>
+        </li>
+    </ul>
 </div>
 </body>
 <script>

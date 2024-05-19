@@ -2,7 +2,6 @@ package com.tempalych.europredictor.model.repository;
 
 import com.tempalych.europredictor.model.entity.User;
 import jakarta.annotation.PostConstruct;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -14,8 +13,20 @@ public class UserRepository {
 
     List<User> users = new ArrayList<>();
 
-    public User getUser() {
-        return users.getFirst();
+    @PostConstruct
+    void init() {
+        var artem = User.builder()
+                .id(1L)
+                .username("artem")
+                .password(new BCryptPasswordEncoder().encode("123"))
+                .build();
+        users.add(artem);
+        var max = User.builder()
+                .id(2L)
+                .username("max")
+                .password(new BCryptPasswordEncoder().encode("321"))
+                .build();
+        users.add(max);
     }
 
     public User save(User user) {
@@ -23,7 +34,7 @@ public class UserRepository {
         return user;
     }
 
-    public UserDetails findByUsername(String username) {
+    public User findByUsername(String username) {
         for (var user: users) {
             if (user.getUsername().equals(username)) {
                 return user;

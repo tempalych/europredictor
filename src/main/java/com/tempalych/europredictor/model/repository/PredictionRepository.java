@@ -18,4 +18,10 @@ public class PredictionRepository {
     public List<Prediction> findAll() {
         return predictions;
     }
+
+    public List<Prediction> findAllByUserId(Long userId) {
+        return predictions.stream()
+                .filter(p -> p.getUser().getId().equals(userId))
+                .toList();
+    }
 }
