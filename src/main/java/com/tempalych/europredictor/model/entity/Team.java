@@ -22,5 +22,8 @@ public class Team {
     private String name;
 
     @Column
-    private String group;
+    private String groupName;
+
+    @Column
+    private String flag;
 }

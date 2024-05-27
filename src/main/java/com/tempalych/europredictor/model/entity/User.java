@@ -1,7 +1,6 @@
 package com.tempalych.europredictor.model.entity;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,9 +17,18 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 
+@Entity
+@Table(name = "users")
 public class User implements UserDetails {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    @Column
     String username;
+
+    @Column
     String password;
 
     @Enumerated(EnumType.STRING)
@@ -29,16 +37,6 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
     }
 
     @Override

@@ -1,61 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="_csrf" th:content="${_csrf.token}" />
-    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="csrf-token" th:content="${_csrf.token}" />
+    <meta name="csrf-header" th:content="${_csrf.headerName}" />
     <title>Make Predictions</title>
     <script src="https://unpkg.com/htmx.org@1.5.0"></script>
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-<h1>Make Predictions</h1>
+<div class="tabs" style="white-space: pre;">
+         <div th:each="group : ${groups}"
+              th:attr="hx-get=@{/group-matches(groupName=${group.name})},
+                        hx-target='#matches',
+                        hx-swap='innerHTML'"
+              th:text="${group.nameWithFlags}"
+              th:class="tab + ${group.id}">
+         </div>
+</div>
+<div id="matches">
+    <!-- Matches will be loaded here -->
+</div>
+<!--<button type="button" onclick="savePredictions()">Save predictions</button>-->
 <form th:action="@{/logout}" method="post">
     <button type="submit">Logout</button>
 </form>
-<form hx-post="/predictions" hx-target="#prediction-results" hx-swap="innerHTML">
-    <div>
-        <label for="match">Match:</label>
-        <select name="matchId" id="match">
-            <option th:each="match : ${matches}" th:value="${match.id}" th:text="${match.homeTeam.group} + ': ' + ${match.homeTeam.name} + ' vs ' + ${match.visitorTeam.name}"></option>
-        </select>
-    </div>
-    <div>
-        <label for="homeScore">Home Team Score:</label>
-        <input type="number" id="homeScore" name="homeScore" required>
-    </div>
-    <div>
-        <label for="visitorScore">Visitor Team Score:</label>
-        <input type="number" id="visitorScore" name="visitorScore" required>
-    </div>
-    <div>
-        <button type="submit">Submit Prediction</button>
-    </div>
-</form>
-<div id="prediction-results">
-    <ul>
-        <li th:each="prediction : ${predictions}">
-            <span th:text="${prediction.match.homeTeam.name}">Home Team</span> vs
-            <span th:text="${prediction.match.visitorTeam.name}">Visitor Team</span>:
-            <span th:text="${prediction.homeScore}">Home Score</span> -
-            <span th:text="${prediction.visitorScore}">Visitor Score</span>
-        </li>
-    </ul>
-</div>
-</body>
-<script>
-    document.body.addEventListener("htmx:configRequest", function (evt) {
-        evt.detail.headers["accept"] = "text/html-partial";
 
-        if (evt.detail.verb !== "get") {
-            const csrfHeaderName = document
-                .querySelector("meta[name='_csrf_header']")
-                .getAttribute("content");
-            evt.detail.headers[csrfHeaderName] = document
-                .querySelector("meta[name='_csrf']")
-                .getAttribute("content");
+<script>
+    document.body.addEventListener('htmx:configRequest', (evt) => {
+        evt.detail.headers['accept'] = 'text/html-partial';
+        if (evt.detail.verb !== 'get') {
+            const csrfHeader = document.querySelector('meta[name=csrf-header]').getAttribute('content');
+            const csrfToken = document.querySelector('meta[name=csrf-token]').getAttribute('content');
+            if (csrfHeader != null && csrfToken != null) {
+                evt.detail.headers[csrfHeader] = csrfToken;
+            }
         }
     });
 </script>
+</body>
 </html>

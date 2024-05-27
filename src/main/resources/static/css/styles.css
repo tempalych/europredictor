@@ -1,62 +1,220 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 20px;
-    background-color: #f4f4f4;
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
 }
 
-h1 {
-    color: #333;
+.header {
+    text-align: center;
+    margin-bottom: 20px;
 }
 
-form {
-    background: #fff;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-form div {
+.header .logo {
+    width: 300px; /* Adjust the size as needed */
+    height: auto;
     margin-bottom: 10px;
 }
 
-label {
+.header h1 {
+    font-size: 32px;
+    color: #333;
+    margin: 0;
+}
+
+.login-container {
+    background-color: #fff;
+    padding: 20px 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+}
+
+.login-container h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+.login-form .form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.login-form label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
+    color: #333;
 }
 
-input, select, button {
+.login-form input {
     width: 100%;
-    padding: 8px;
-    margin-top: 4px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
 }
 
-button {
-    background-color: #4CAF50;
-    color: white;
+.login-form input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+}
+
+.login-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
     border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-button:hover {
-    background-color: #45a049;
+.login-button:hover {
+    background-color: #0056b3;
 }
 
-#prediction-results {
+.tabs {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    grid-auto-rows: minmax(100px, auto);
+    cursor: pointer;
+    text-align: center;
+    font-size: 1.2em;
+}
+
+.tabs div:hover,
+.tabs div:focus {
+    background-color: #ddd;
+}
+
+.tab0 {
+    grid-column: 1;
+    grid-row: 1;
+    text-decoration: none;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    color: #000;
+}
+
+.tab1 {
+    grid-column: 2;
+    grid-row: 1;
+    text-decoration: none;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    color: #000;
+}
+
+.tab2 {
+    grid-column: 3;
+    grid-row: 1;
+    text-decoration: none;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    color: #000;
+}
+
+.tab3 {
+    grid-column: 4;
+    grid-row: 1;
+    text-decoration: none;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    color: #000;
+}
+
+.tab4 {
+    grid-column: 5;
+    grid-row: 1;
+    text-decoration: none;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    color: #000;
+}
+
+.tab5 {
+    grid-column: 6;
+    grid-row: 1;
+    text-decoration: none;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    color: #000;
+}
+
+#matches {
     margin-top: 20px;
 }
 
-#prediction-results ul {
-    list-style-type: none;
-    padding: 0;
+.matches-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-#prediction-results li {
-    background: #fff;
-    padding: 10px;
-    border: 1px solid #ccc;
-    margin-bottom: 5px;
-    border-radius: 4px;
+.match {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.match-info {
+    display: grid;
+    grid-template-columns: 1fr auto auto 1fr;
+    grid-template-rows: auto auto;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+}
+
+.match-time {
+    grid-column: 1 / span 4;
+    text-align: center;
+    font-size: 0.8em;
+}
+
+.team-name-visitor {
+    text-align: left;
+    font-size: 1.2em;
+}
+
+.team-name-home {
+    text-align: right;
+    font-size: 1.2em;
+}
+
+.score-input {
+    width: 50px;
+    text-align: center;
+    font-size: 1.2em;
+}
+
+button {
+    background-color: #000;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #444;
 }

@@ -3,6 +3,8 @@ package com.tempalych.europredictor.controller;
 import com.tempalych.europredictor.service.MatchService;
 import com.tempalych.europredictor.service.PredictionService;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,27 +15,37 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class PredictionController {
 
-    PredictionService predictionService;
-    MatchService matchService;
+    private static final Logger logger = LoggerFactory.getLogger(PredictionController.class);
 
-    @GetMapping("/prediction-form")
+    private final MatchService matchService;
+    private final PredictionService predictionService;
+
+    @GetMapping("/predictions")
     public String showPredictionForm(Model model) {
-        var matches = matchService.getAllAvailableMatches();
-        model.addAttribute("matches", matches);
-        var userPredictions = predictionService.getCurrentUserPredictions();
-        model.addAttribute("predictions", userPredictions);
+        model.addAttribute("groups", matchService.getGroups());
         return "prediction/form";
     }
 
-    @PostMapping("/predictions")
-    public String submitPrediction(@RequestParam Long matchId,
-                                   @RequestParam Integer homeScore,
-                                   @RequestParam Integer visitorScore,
-                                   Model model) {
-
-        predictionService.newPrediction(matchId, homeScore, visitorScore);
-        var predictions = predictionService.getCurrentUserPredictions();
-        model.addAttribute("predictions", predictions);
+    @GetMapping("/group-matches")
+    public String getGroupMatches(@RequestParam String groupName, Model model) {
+        var matchPredictions = predictionService.getGroupMatchesWithUserPredictions(groupName);
+        model.addAttribute("matchPredictions", matchPredictions);
         return "prediction/list";
+    }
+
+    @PostMapping("/save-prediction-home")
+    public String savePredictionHome(@RequestParam Integer homeScore,
+                                     @RequestParam Long matchId) {
+        logger.info("POST /save-prediction-home: homeScore: {}, matchId: {}", homeScore, matchId);
+        predictionService.savePrediction(matchId, homeScore, true);
+        return "redirect:/predictions";
+    }
+
+    @PostMapping("/save-prediction-visitor")
+    public String savePredictionVisitor(@RequestParam Integer visitorScore,
+                                        @RequestParam Long matchId) {
+        logger.info("POST /save-prediction-visitor: score: {}, matchId: {}", visitorScore, matchId);
+        predictionService.savePrediction(matchId, visitorScore, false);
+        return "redirect:/predictions";
     }
 }

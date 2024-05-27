@@ -1,9 +1,28 @@
-<!-- list.html -->
-<ul>
-  <li th:each="prediction : ${predictions}">
-    <span th:text="${prediction.match.homeTeam.name}">Home Team</span> vs
-    <span th:text="${prediction.match.visitorTeam.name}">Visitor Team</span>:
-    <span th:text="${prediction.homeScore}">Home Score</span> -
-    <span th:text="${prediction.visitorScore}">Visitor Score</span>
-  </li>
-</ul>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Matches</title>
+</head>
+<body>
+<!--<form id="prediction-form" class="matches-form">-->
+    <div th:each="matchPrediction : ${matchPredictions}" class="match">
+        <form th:id="prediction-form + ${matchPrediction.matchId}" class="match-info">
+            <span class="match-time" th:text="${#temporals.format(matchPrediction.time, 'E, MMM dd HH:mm')}"></span>
+            <span class="team-name-home" th:text="${matchPrediction.homeTeamName}"></span>
+            <input class="score-input" th:name="homeScore" min="0" th:value="${matchPrediction.homeScorePrediction}"
+                   th:attr="hx-post=@{/save-prediction-home},
+                   hx-trigger='change',
+                   hx-swap='none',
+                   hx-vals='js:{matchId:'+${matchPrediction.matchId}+'}'">
+            <input class="score-input" th:name="visitorScore" min="0" th:value="${matchPrediction.visitorScorePrediction}"
+                   th:attr="hx-post=@{/save-prediction-visitor},
+                   hx-trigger='change',
+                   hx-swap='none',
+                   hx-vals='js:{matchId:'+${matchPrediction.matchId}+'}'">
+            <span class="team-name-visitor" th:text="${matchPrediction.visitorTeamName}"></span>
+      </form>
+  </div>
+<!--</form>-->
+</body>
+</html>

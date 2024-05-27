@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class UserService {
 
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public User getCurrentUser() {
         var auth = SecurityContextHolder.getContext().getAuthentication();

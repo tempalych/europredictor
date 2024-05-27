@@ -1,5 +1,6 @@
 package com.tempalych.europredictor.service;
 
+import com.tempalych.europredictor.model.dto.MatchPredictionDto;
 import com.tempalych.europredictor.model.entity.Prediction;
 import com.tempalych.europredictor.model.repository.MatchRepository;
 import com.tempalych.europredictor.model.repository.PredictionRepository;
@@ -12,22 +13,35 @@ import java.util.List;
 @AllArgsConstructor
 public class PredictionService {
 
-    MatchRepository matchRepository;
-    PredictionRepository predictionRepository;
-    UserService userService;
+    private final MatchRepository matchRepository;
+    private final PredictionRepository predictionRepository;
+    private final UserService userService;
 
-    public void newPrediction(Long matchId, Integer homeScore, Integer visitorScore) {
-        var match = matchRepository.findById(matchId);
-        var prediction = Prediction.builder()
-                .user(userService.getCurrentUser())
-                .match(match)
-                .homeScore(homeScore)
-                .visitorScore(visitorScore)
-                .build();
+    public void savePrediction(Long matchId, Integer score, Boolean isHome) {
+        var user = userService.getCurrentUser();
+        var prediction = predictionRepository.findByUserIdAndMatchId(user.getId(), matchId);
+        if (prediction == null) {
+            prediction = Prediction.builder()
+                    .user(user)
+                    .match(matchRepository.getReferenceById(matchId))
+                    .build();
+        }
+
+        if (isHome) {
+            prediction.setHomeScore(score);
+        } else {
+            prediction.setVisitorScore(score);
+        }
+
         predictionRepository.save(prediction);
     }
 
     public List<Prediction> getCurrentUserPredictions() {
         return predictionRepository.findAllByUserId(userService.getCurrentUser().getId());
+    }
+
+    public List<MatchPredictionDto> getGroupMatchesWithUserPredictions(String groupName) {
+        var user = userService.getCurrentUser();
+        return predictionRepository.findPredictionsByGroupAndUserId(groupName, user.getId());
     }
 }
