@@ -36,10 +36,6 @@ public class PredictionService {
         predictionRepository.save(prediction);
     }
 
-    public List<Prediction> getCurrentUserPredictions() {
-        return predictionRepository.findAllByUserId(userService.getCurrentUser().getId());
-    }
-
     public List<MatchPredictionDto> getGroupMatchesWithUserPredictions(String groupName) {
         var user = userService.getCurrentUser();
         return predictionRepository.findPredictionsByGroupAndUserId(groupName, user.getId());

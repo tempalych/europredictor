@@ -13,8 +13,6 @@ import java.util.List;
 @Component
 public interface PredictionRepository extends JpaRepository<Prediction, Long> {
 
-    List<Prediction> findAllByUserId(Long userId);
-
     Prediction findByUserIdAndMatchId(Long userId, Long matchId);
 
     @Query("SELECT new com.tempalych.europredictor.model.dto.MatchPredictionDto(m.id, home_team.name, " +
