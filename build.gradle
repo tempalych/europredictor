@@ -20,7 +20,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation "org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE"
 
-    runtimeOnly "org.postgresql:postgresql:${postgresVersion}"
+    implementation "org.postgresql:postgresql:${postgresVersion}"
 
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
@@ -30,6 +30,9 @@ dependencies {
     testImplementation ("org.springframework.boot:spring-boot-starter-test") {
         exclude group: "org.junit.vintage', module: 'junit-vintage-engine"
     }
+    testImplementation "org.testcontainers:postgresql:${testContainersPostgresVersion}"
+    testImplementation "org.springframework.security:spring-security-test:${springSecurityTestVersion}"
+    testImplementation "org.htmlunit:htmlunit:${htmlUnitVersion}"
 }
 
 tasks.named('test') {

@@ -9,8 +9,9 @@
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-<div class="tabs" style="white-space: pre;">
+<div class="tabs" th:name="tabs" style="white-space: pre;">
          <div th:each="group : ${groups}"
+              th:name="grouptab"
               th:attr="hx-get=@{/group-matches(groupName=${group.name})},
                         hx-target='#matches',
                         hx-swap='innerHTML'"
@@ -21,7 +22,6 @@
 <div id="matches">
     <!-- Matches will be loaded here -->
 </div>
-<!--<button type="button" onclick="savePredictions()">Save predictions</button>-->
 <form th:action="@{/logout}" method="post">
     <button type="submit">Logout</button>
 </form>

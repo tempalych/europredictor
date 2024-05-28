@@ -7,7 +7,7 @@
 <body>
 <!--<form id="prediction-form" class="matches-form">-->
     <div th:each="matchPrediction : ${matchPredictions}" class="match">
-        <form th:id="prediction-form + ${matchPrediction.matchId}" class="match-info">
+        <form th:id="prediction-form + ${matchPrediction.matchId}" class="match-info" name="match-info">
             <span class="match-time" th:text="${#temporals.format(matchPrediction.time, 'E, MMM dd HH:mm')}"></span>
             <span class="team-name-home" th:text="${matchPrediction.homeTeamName}"></span>
             <input class="score-input" th:name="homeScore" min="0" th:value="${matchPrediction.homeScorePrediction}"
