@@ -3,9 +3,11 @@ services:
   postgres:
     image: postgres:latest
     environment:
-      POSTGRES_DB:
-      POSTGRES_USER:
-      POSTGRES_PASSWORD:
+      POSTGRES_DB: europredictor
+      POSTGRES_USER: europredictor
+      POSTGRES_PASSWORD: europredictor
+    volumes:
+      - ~/postgres-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 #  app:
