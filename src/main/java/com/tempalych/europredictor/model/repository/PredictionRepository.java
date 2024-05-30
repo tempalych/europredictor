@@ -16,12 +16,13 @@ public interface PredictionRepository extends JpaRepository<Prediction, Long> {
     Prediction findByUserIdAndMatchId(Long userId, Long matchId);
 
     @Query("SELECT new com.tempalych.europredictor.model.dto.MatchPredictionDto(m.id, home_team.name, " +
-            "visitor_team.name, m.groupName, m.time, m.homeScore, m.visitorScore, p.homeScore, p.visitorScore) " +
+            "visitor_team.name, m.groupName, m.time, m.homeScore, m.visitorScore, p.homeScore, p.visitorScore, false) " +
             "FROM Match m " +
             "LEFT JOIN Prediction p on m.id = p.match.id and p.user.id = :userId " +
             "LEFT JOIN Team home_team on home_team.id = m.homeTeam.id " +
             "LEFT JOIN Team visitor_team on visitor_team.id = m.visitorTeam.id " +
-            "WHERE m.groupName = :groupName ")
+            "WHERE m.groupName = :groupName " +
+            "ORDER BY m.time")
     List<MatchPredictionDto> findPredictionsByGroupAndUserId(@Param("groupName") String groupName,
                                                              @Param("userId") Long userId);
 }

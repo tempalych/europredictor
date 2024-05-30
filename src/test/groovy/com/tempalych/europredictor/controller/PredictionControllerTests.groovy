@@ -19,6 +19,7 @@ import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfig
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultMatcher
 import org.springframework.web.context.WebApplicationContext
 import spock.lang.Shared
 import spock.lang.Specification
@@ -161,7 +162,7 @@ class PredictionControllerTests extends Specification {
     def "Each user has his own predictions"() {
         setup:
         def matchId = matchRepository.findAll().stream()
-                .filter { it.homeTeam.name == "Germany" && it.visitorTeam.name == "Scotland" }
+                .filter { it.homeTeam.name == "Hungary" && it.visitorTeam.name == "Switzerland" }
                 .toList().first()
                 .getId()
         def user1Id = userRepository.findByUsername("user1").getId()
@@ -221,14 +222,14 @@ class PredictionControllerTests extends Specification {
 
         and: "Score on the returned page is updated"
         page1.getElementByName("match-info")
-                .getByXPath("//form/input[@name='homeScore']")[0].asNormalizedText() == "1"
+                .getByXPath("//form/input[@name='homeScore']")[1].asNormalizedText() == "1"
         page1.getElementByName("match-info")
-                .getByXPath("//form/input[@name='visitorScore']")[0].asNormalizedText() == "1"
+                .getByXPath("//form/input[@name='visitorScore']")[1].asNormalizedText() == "1"
 
         page2.getElementByName("match-info")
-                .getByXPath("//form/input[@name='homeScore']")[0].asNormalizedText() == "2"
+                .getByXPath("//form/input[@name='homeScore']")[1].asNormalizedText() == "2"
         page2.getElementByName("match-info")
-                .getByXPath("//form/input[@name='visitorScore']")[0].asNormalizedText() == "2"
+                .getByXPath("//form/input[@name='visitorScore']")[1].asNormalizedText() == "2"
     }
 
     private void createUsers() {
@@ -308,89 +309,89 @@ class PredictionControllerTests extends Specification {
 
         def matches = [
                 Match.builder().homeTeam(germany).visitorTeam(scotland).groupName("A")
-                        .time(LocalDateTime.of(2024, 6, 14, 21, 0)).build(),
+                        .time(LocalDateTime.now().plusMinutes(1)).build(), // this match will start in 1 minute
 
                 Match.builder().homeTeam(hungary).visitorTeam(switzerland).groupName("A")
-                        .time(LocalDateTime.of(2024, 6, 15, 15, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(1)).build(),
                 Match.builder().homeTeam(spain).visitorTeam(croatia).groupName("B")
-                        .time(LocalDateTime.of(2024, 6, 15, 18, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(2)).build(),
                 Match.builder().homeTeam(italy).visitorTeam(albania).groupName("B")
-                        .time(LocalDateTime.of(2024, 6, 15, 21, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(3)).build(),
 
                 Match.builder().homeTeam(poland).visitorTeam(netherlands).groupName("D")
-                        .time(LocalDateTime.of(2024, 6, 16, 15, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(4)).build(),
                 Match.builder().homeTeam(slovenia).visitorTeam(denmark).groupName("C")
-                        .time(LocalDateTime.of(2024, 6, 16, 18, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(5)).build(),
                 Match.builder().homeTeam(serbia).visitorTeam(england).groupName("C")
-                        .time(LocalDateTime.of(2024, 6, 16, 21, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(6)).build(),
 
                 Match.builder().homeTeam(romania).visitorTeam(ukraine).groupName("E")
-                        .time(LocalDateTime.of(2024, 6, 17, 15, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(7)).build(),
                 Match.builder().homeTeam(belgium).visitorTeam(slovakia).groupName("E")
-                        .time(LocalDateTime.of(2024, 6, 17, 18, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(8)).build(),
                 Match.builder().homeTeam(austria).visitorTeam(france).groupName("D")
-                        .time(LocalDateTime.of(2024, 6, 17, 21, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(9)).build(),
 
                 Match.builder().homeTeam(turkiye).visitorTeam(georgia).groupName("F")
-                        .time(LocalDateTime.of(2024, 6, 18, 18, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(10)).build(),
                 Match.builder().homeTeam(portugal).visitorTeam(czechia).groupName("F")
-                        .time(LocalDateTime.of(2024, 6, 18, 21, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(11)).build(),
 
                 Match.builder().homeTeam(croatia).visitorTeam(albania).groupName("B")
-                        .time(LocalDateTime.of(2024, 6, 19, 15, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(12)).build(),
                 Match.builder().homeTeam(germany).visitorTeam(hungary).groupName("A")
-                        .time(LocalDateTime.of(2024, 6, 19, 18, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(13)).build(),
                 Match.builder().homeTeam(scotland).visitorTeam(switzerland).groupName("A")
-                        .time(LocalDateTime.of(2024, 6, 19, 21, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(14)).build(),
 
                 Match.builder().homeTeam(slovenia).visitorTeam(serbia).groupName("C")
-                        .time(LocalDateTime.of(2024, 6, 20, 15, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(15)).build(),
                 Match.builder().homeTeam(denmark).visitorTeam(england).groupName("C")
-                        .time(LocalDateTime.of(2024, 6, 20, 18, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(16)).build(),
                 Match.builder().homeTeam(spain).visitorTeam(italy).groupName("B")
-                        .time(LocalDateTime.of(2024, 6, 20, 21, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(17)).build(),
 
                 Match.builder().homeTeam(slovakia).visitorTeam(ukraine).groupName("E")
-                        .time(LocalDateTime.of(2024, 6, 21, 15, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(18)).build(),
                 Match.builder().homeTeam(poland).visitorTeam(austria).groupName("D")
-                        .time(LocalDateTime.of(2024, 6, 21, 18, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(19)).build(),
                 Match.builder().homeTeam(netherlands).visitorTeam(france).groupName("D")
-                        .time(LocalDateTime.of(2024, 6, 21, 21, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(20)).build(),
 
                 Match.builder().homeTeam(georgia).visitorTeam(czechia).groupName("F")
-                        .time(LocalDateTime.of(2024, 6, 22, 15, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(21)).build(),
                 Match.builder().homeTeam(turkiye).visitorTeam(portugal).groupName("F")
-                        .time(LocalDateTime.of(2024, 6, 22, 18, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(22)).build(),
                 Match.builder().homeTeam(belgium).visitorTeam(romania).groupName("E")
-                        .time(LocalDateTime.of(2024, 6, 22, 21, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(23)).build(),
 
                 Match.builder().homeTeam(switzerland).visitorTeam(germany).groupName("A")
-                        .time(LocalDateTime.of(2024, 6, 23, 21, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(24)).build(),
                 Match.builder().homeTeam(scotland).visitorTeam(hungary).groupName("A")
-                        .time(LocalDateTime.of(2024, 6, 23, 21, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(25)).build(),
 
                 Match.builder().homeTeam(croatia).visitorTeam(italy).groupName("B")
-                        .time(LocalDateTime.of(2024, 6, 24, 21, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(26)).build(),
                 Match.builder().homeTeam(albania).visitorTeam(spain).groupName("B")
-                        .time(LocalDateTime.of(2024, 6, 24, 21, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(27)).build(),
 
                 Match.builder().homeTeam(netherlands).visitorTeam(austria).groupName("D")
-                        .time(LocalDateTime.of(2024, 6, 25, 18, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(28)).build(),
                 Match.builder().homeTeam(france).visitorTeam(poland).groupName("D")
-                        .time(LocalDateTime.of(2024, 6, 25, 18, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(29)).build(),
                 Match.builder().homeTeam(england).visitorTeam(slovenia).groupName("C")
-                        .time(LocalDateTime.of(2024, 6, 25, 21, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(30)).build(),
                 Match.builder().homeTeam(denmark).visitorTeam(serbia).groupName("C")
-                        .time(LocalDateTime.of(2024, 6, 25, 21, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(31)).build(),
 
                 Match.builder().homeTeam(slovakia).visitorTeam(romania).groupName("E")
-                        .time(LocalDateTime.of(2024, 6, 26, 18, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(32)).build(),
                 Match.builder().homeTeam(ukraine).visitorTeam(belgium).groupName("E")
-                        .time(LocalDateTime.of(2024, 6, 26, 18, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(33)).build(),
                 Match.builder().homeTeam(czechia).visitorTeam(turkiye).groupName("F")
-                        .time(LocalDateTime.of(2024, 6, 26, 21, 0)).build(),
+                        .time(LocalDateTime.now().plusDays(34)).build(),
                 Match.builder().homeTeam(georgia).visitorTeam(portugal).groupName("F")
-                        .time(LocalDateTime.of(2024, 6, 26, 21, 0)).build()
+                        .time(LocalDateTime.now().plusDays(35)).build()
         ]
 
         matchRepository.saveAll(matches)
