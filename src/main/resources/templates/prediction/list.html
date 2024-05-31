@@ -9,7 +9,7 @@
         <form th:id="prediction-form + ${matchPrediction.matchId}" class="match-info" name="match-info">
             <span class="match-time" th:text="${#temporals.format(matchPrediction.time, 'E, MMM dd HH:mm')}"></span>
             <span class="team-name-home" th:text="${matchPrediction.homeTeamName}"></span>
-            <input class="score-input" th:name="homeScore" min="0"
+            <input type="number" class="score-input" th:name="homeScore" min="0"
                    th:value="${matchPrediction.homeScorePrediction}"
                    th:disabled="${matchPrediction.disabled}"
                    th:autocomplete="off"
@@ -17,7 +17,7 @@
                    hx-trigger='change',
                    hx-swap='none',
                    hx-vals='js:{matchId:'+${matchPrediction.matchId}+'}'">
-            <input class="score-input" th:name="visitorScore" min="0"
+            <input type="number" class="score-input" th:name="visitorScore" min="0"
                    th:value="${matchPrediction.visitorScorePrediction}"
                    th:disabled="${matchPrediction.disabled}"
                    th:autocomplete="off"

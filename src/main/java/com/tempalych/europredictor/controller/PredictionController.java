@@ -26,6 +26,11 @@ public class PredictionController {
         return "prediction/form";
     }
 
+    @GetMapping("/")
+    public String showPredictionFormRoot(Model model) {
+        return showPredictionForm(model);
+    }
+
     @GetMapping("/group-matches")
     public String getGroupMatches(@RequestParam String groupName, Model model) {
         var matchPredictions = predictionService.getGroupMatchesWithUserPredictions(groupName);

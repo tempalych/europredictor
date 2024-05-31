@@ -31,5 +31,8 @@ class PredictionServiceTests extends Specification {
         4     | 4        | 1     | 0        || 0     | PredictionValue.GUESSED_NOTHING
         4     | 1        | 0     | 1        || 0     | PredictionValue.GUESSED_NOTHING
         4     | 1        | 0     | 0        || 0     | PredictionValue.GUESSED_NOTHING
+        1     | 1        | null  | 1        || 0     | PredictionValue.NO_PREDICTION
+        1     | 1        | 1     | null     || 0     | PredictionValue.NO_PREDICTION
+        1     | 1        | null  | null     || 0     | PredictionValue.NO_PREDICTION
     }
 }
