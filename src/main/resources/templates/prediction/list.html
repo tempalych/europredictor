@@ -5,7 +5,6 @@
   <title>Matches</title>
 </head>
 <body>
-<!--<form id="prediction-form" class="matches-form">-->
     <div th:each="matchPrediction : ${matchPredictions}" class="match">
         <form th:id="prediction-form + ${matchPrediction.matchId}" class="match-info" name="match-info">
             <span class="match-time" th:text="${#temporals.format(matchPrediction.time, 'E, MMM dd HH:mm')}"></span>
@@ -13,6 +12,7 @@
             <input class="score-input" th:name="homeScore" min="0"
                    th:value="${matchPrediction.homeScorePrediction}"
                    th:disabled="${matchPrediction.disabled}"
+                   th:autocomplete="off"
                    th:attr="hx-post=@{/save-prediction-home},
                    hx-trigger='change',
                    hx-swap='none',
@@ -20,13 +20,18 @@
             <input class="score-input" th:name="visitorScore" min="0"
                    th:value="${matchPrediction.visitorScorePrediction}"
                    th:disabled="${matchPrediction.disabled}"
+                   th:autocomplete="off"
                    th:attr="hx-post=@{/save-prediction-visitor},
                    hx-trigger='change',
                    hx-swap='none',
                    hx-vals='js:{matchId:'+${matchPrediction.matchId}+'}'">
             <span class="team-name-visitor" th:text="${matchPrediction.visitorTeamName}"></span>
+            <div class="additional-info" th:if="${matchPrediction.predictionValue} != null">
+                <span th:if="${matchPrediction.homeScore != null}" th:text="${matchPrediction.homeScore} + ':' + ${matchPrediction.visitorScore}"></span>
+                <span class="prediction-score" th:if="${matchPrediction.predictionValue != null}" th:text="'+' + ${matchPrediction.predictionValue.score}"></span>
+                <span th:if="${matchPrediction.predictionValue != null}" th:text="${matchPrediction.predictionValue.description}"></span>
+            </div>
       </form>
   </div>
-<!--</form>-->
 </body>
 </html>

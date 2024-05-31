@@ -32,6 +32,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/img/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/error").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -39,8 +40,7 @@ public class SecurityConfig {
                         .permitAll())
                 .cors(Customizer.withDefaults())
                 .logout(LogoutConfigurer::permitAll)
-                .httpBasic(withDefaults())
-        ;
+                .httpBasic(withDefaults());
         return http.build();
     }
 

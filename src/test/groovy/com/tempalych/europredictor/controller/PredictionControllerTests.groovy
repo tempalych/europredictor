@@ -2,9 +2,11 @@ package com.tempalych.europredictor.controller
 
 import com.tempalych.europredictor.EuroPredictorApplication
 import com.tempalych.europredictor.config.TestDataSourceConfig
+import com.tempalych.europredictor.model.dto.PredictionValue
 import com.tempalych.europredictor.model.entity.Match
 import com.tempalych.europredictor.model.entity.Team
 import com.tempalych.europredictor.model.entity.User
+import com.tempalych.europredictor.model.entity.UserRole
 import com.tempalych.europredictor.model.repository.MatchRepository
 import com.tempalych.europredictor.model.repository.PredictionRepository
 import com.tempalych.europredictor.model.repository.TeamRepository
@@ -14,12 +16,12 @@ import org.htmlunit.html.HtmlPage
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
+import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.ResultMatcher
 import org.springframework.web.context.WebApplicationContext
 import spock.lang.Shared
 import spock.lang.Specification
@@ -28,7 +30,6 @@ import java.time.LocalDateTime
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -104,6 +105,25 @@ class PredictionControllerTests extends Specification {
         response.getStatus() == 401
     }
 
+    def "Only admin has restriction to update actual score"() {
+        setup:
+        def matchId = matchRepository.findAll().stream()
+                .filter { it.homeTeam.name == "Hungary" && it.visitorTeam.name == "Switzerland" }
+                .toList().first()
+                .getId()
+        when:
+        def response = saveActualScore(username, password, matchId, 1, 1)
+        then:
+        response.getStatus() == responseStatus
+        where:
+        username             | password         || responseStatus
+        "user1"              | "111"            || 403
+        "user2"              | "222"            || 403
+        "user1"              | "wrong_password" || 401
+        "some_unknown_user"  | "wrong_password" || 401
+        "admin"              | "a123"           || 302
+    }
+
     def "Group list displays correctly for authorized user"() {
         when:
         def response =
@@ -159,7 +179,7 @@ class PredictionControllerTests extends Specification {
         "F"   || ["Türkiye", "Portugal", "Georgia", "Türkiye", "Czechia", "Georgia"]      | ["Georgia", "Czechia", "Czechia", "Portugal", "Türkiye", "Portugal"]
     }
 
-    def "Each user has his own predictions"() {
+    def "Each user has their own predictions"() {
         setup:
         def matchId = matchRepository.findAll().stream()
                 .filter { it.homeTeam.name == "Hungary" && it.visitorTeam.name == "Switzerland" }
@@ -169,30 +189,10 @@ class PredictionControllerTests extends Specification {
         def user2Id = userRepository.findByUsername("user2").getId()
 
         when: "First user updates the score of the 1st match. He sets 1:1"
-        mockMvc.perform(post("/save-prediction-home?homeScore=1&visitorScore=&matchId=$matchId")
-                .accept("text/html-partial")
-                .with(csrf())
-                .with(httpBasic("user1", "111")))
-                .andReturn().response
-
-        mockMvc.perform(post("/save-prediction-visitor?homeScore=1&visitorScore=1&matchId=$matchId")
-                .accept("text/html-partial")
-                .with(csrf())
-                .with(httpBasic("user1", "111")))
-                .andReturn().response
+        makeUserPrediction("user1", "111", matchId, 1, 1)
 
         and: "Second user updates the score of the 1st match. He sets 2:2"
-        mockMvc.perform(post("/save-prediction-home?homeScore=2&visitorScore=&matchId=$matchId")
-                .accept("text/html-partial")
-                .with(csrf())
-                .with(httpBasic("user2", "222")))
-                .andReturn().response
-
-        mockMvc.perform(post("/save-prediction-visitor?homeScore=2&visitorScore=2&matchId=$matchId")
-                .accept("text/html-partial")
-                .with(csrf())
-                .with(httpBasic("user2", "222")))
-                .andReturn().response
+        makeUserPrediction("user2", "222", matchId, 2, 2)
 
         and: "Each user requests new page"
         def responseUser1 =
@@ -232,6 +232,62 @@ class PredictionControllerTests extends Specification {
                 .getByXPath("//form/input[@name='visitorScore']")[1].asNormalizedText() == "2"
     }
 
+    def "Predictions bring respective values"() {
+        setup:
+        def matchId1 = matchRepository.findAll().stream()
+                .filter { it.homeTeam.name == "Hungary" && it.visitorTeam.name == "Switzerland" }
+                .toList().first()
+                .getId()
+        def matchId2 = matchRepository.findAll().stream()
+                .filter { it.homeTeam.name == "Germany" && it.visitorTeam.name == "Hungary" }
+                .toList().first()
+                .getId()
+        def matchId3 = matchRepository.findAll().stream()
+                .filter { it.homeTeam.name == "Scotland" && it.visitorTeam.name == "Switzerland" }
+                .toList().first()
+                .getId()
+        def matchId4 = matchRepository.findAll().stream()
+                .filter { it.homeTeam.name == "Switzerland" && it.visitorTeam.name == "Germany" }
+                .toList().first()
+                .getId()
+        def matchId5 = matchRepository.findAll().stream()
+                .filter { it.homeTeam.name == "Scotland" && it.visitorTeam.name == "Hungary" }
+                .toList().first()
+                .getId()
+        def userId = userRepository.findByUsername("user1").getId()
+
+        when: "User makes predictions"
+        makeUserPrediction("user1", "111", matchId1, 1, 0)
+        makeUserPrediction("user1", "111", matchId2, 1, 0)
+        makeUserPrediction("user1", "111", matchId3, 1, 0)
+        makeUserPrediction("user1", "111", matchId4, 0, 0)
+        makeUserPrediction("user1", "111", matchId5, 1, 0)
+
+        and: "Admin inputs actual score"
+        saveActualScore("admin", "a123", matchId1, 1, 0) // GUESSED_EXACT_SCORE
+        saveActualScore("admin", "a123", matchId2, 2, 1) // GUESSED_WINNER_AND_SCORE_DIFFERENCE
+        saveActualScore("admin", "a123", matchId3, 2, 0) // GUESSED_WINNER
+        saveActualScore("admin", "a123", matchId4, 2, 2) // GUESSED_DRAW_BUT_NOT_SCORE
+        saveActualScore("admin", "a123", matchId5, 0, 1) // GUESSED_NOTHING
+
+        then: "Prediction score has been calculated"
+        def predictions = predictionRepository.findByUserId(userId)
+        predictions.findAll { (it.getMatch().getId() == matchId1) }[0].getPredictionValue() == PredictionValue.GUESSED_EXACT_SCORE
+        predictions.findAll { (it.getMatch().getId() == matchId1) }[0].getPredictionValueScore() == 3
+
+        predictions.findAll { (it.getMatch().getId() == matchId2) }[0].getPredictionValue() == PredictionValue.GUESSED_WINNER_AND_SCORE_DIFFERENCE
+        predictions.findAll { (it.getMatch().getId() == matchId2) }[0].getPredictionValueScore() == 2
+
+        predictions.findAll { (it.getMatch().getId() == matchId3) }[0].getPredictionValue() == PredictionValue.GUESSED_WINNER
+        predictions.findAll { (it.getMatch().getId() == matchId3) }[0].getPredictionValueScore() == 1
+
+        predictions.findAll { (it.getMatch().getId() == matchId4) }[0].getPredictionValue() == PredictionValue.GUESSED_DRAW_BUT_NOT_SCORE
+        predictions.findAll { (it.getMatch().getId() == matchId4) }[0].getPredictionValueScore() == 1
+
+        predictions.findAll { (it.getMatch().getId() == matchId5) }[0].getPredictionValue() == PredictionValue.GUESSED_NOTHING
+        predictions.findAll { (it.getMatch().getId() == matchId5) }[0].getPredictionValueScore() == 0
+    }
+
     private void createUsers() {
         def users = [
                 User.builder()
@@ -241,6 +297,11 @@ class PredictionControllerTests extends Specification {
                 User.builder()
                         .username("user2")
                         .password(new BCryptPasswordEncoder().encode("222"))
+                        .build(),
+                User.builder()
+                        .username("admin")
+                        .password(new BCryptPasswordEncoder().encode("a123"))
+                        .role(UserRole.ROLE_ADMIN)
                         .build()
                 ]
         userRepository.saveAll(users)
@@ -395,6 +456,28 @@ class PredictionControllerTests extends Specification {
         ]
 
         matchRepository.saveAll(matches)
+    }
+
+    def makeUserPrediction(String username, String password, Long matchId, Integer homeScore, Integer visitorScore) {
+        mockMvc.perform(post("/save-prediction-home?homeScore=$homeScore&visitorScore=&matchId=$matchId")
+                .accept("text/html-partial")
+                .with(csrf())
+                .with(httpBasic(username, password)))
+                .andReturn().response
+
+        mockMvc.perform(post("/save-prediction-visitor?homeScore=$homeScore&visitorScore=$visitorScore&matchId=$matchId")
+                .accept("text/html-partial")
+                .with(csrf())
+                .with(httpBasic(username, password)))
+                .andReturn().response
+    }
+
+    MockHttpServletResponse saveActualScore(String username, String password, Long matchId, Integer homeScore, Integer visitorScore) {
+        return mockMvc.perform(post("/admin/save-result?matchId=$matchId&homeScore=$homeScore&visitorScore=$visitorScore")
+                .accept("text/html-partial")
+                .with(csrf())
+                .with(httpBasic(username, password)))
+                .andReturn().response
     }
 
 }

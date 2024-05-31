@@ -1,7 +1,8 @@
 package com.tempalych.europredictor.model.entity;
 
 public enum UserRole {
-    USER("user");
+    ROLE_USER("ROLE_USER"),
+    ROLE_ADMIN("ROLE_ADMIN");
 
     private final String role;
 

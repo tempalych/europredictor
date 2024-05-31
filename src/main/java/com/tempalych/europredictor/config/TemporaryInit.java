@@ -3,7 +3,9 @@ package com.tempalych.europredictor.config;
 import com.tempalych.europredictor.model.entity.Match;
 import com.tempalych.europredictor.model.entity.Team;
 import com.tempalych.europredictor.model.entity.User;
+import com.tempalych.europredictor.model.entity.UserRole;
 import com.tempalych.europredictor.model.repository.MatchRepository;
+import com.tempalych.europredictor.model.repository.PredictionRepository;
 import com.tempalych.europredictor.model.repository.TeamRepository;
 import com.tempalych.europredictor.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,16 +30,19 @@ public class TemporaryInit {
     @Autowired
     MatchRepository matchRepository;
 
+    @Autowired
+    private PredictionRepository predictionRepository;
+
 //    @PostConstruct
     private void init() {
-//        matchRepository.deleteAll();
-//        teamRepository.deleteAll();
-//        userRepository.deleteAll();
+        predictionRepository.deleteAll();
+        matchRepository.deleteAll();
+        teamRepository.deleteAll();
+        userRepository.deleteAll();
         createUsers();
         createTeams();
         createMatches();
     }
-
     private void createUsers() {
         List<User> users = new ArrayList<>();
         var artem = User.builder()
@@ -46,12 +51,22 @@ public class TemporaryInit {
                 .password(new BCryptPasswordEncoder().encode("123"))
                 .build();
         users.add(artem);
+
         var max = User.builder()
                 .id(2L)
                 .username("max")
                 .password(new BCryptPasswordEncoder().encode("321"))
                 .build();
         users.add(max);
+
+        var admin = User.builder()
+                .id(3L)
+                .username("admin")
+                .password(new BCryptPasswordEncoder().encode("a123"))
+                .role(UserRole.ROLE_ADMIN)
+                .build();
+        users.add(admin);
+
         userRepository.saveAll(users);
     }
 

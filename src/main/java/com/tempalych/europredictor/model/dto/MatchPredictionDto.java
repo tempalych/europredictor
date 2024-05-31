@@ -18,4 +18,5 @@ public class MatchPredictionDto {
     private Integer homeScorePrediction;
     private Integer visitorScorePrediction;
     private Boolean disabled;
+    private PredictionValue predictionValue;
 }

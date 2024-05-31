@@ -1,5 +1,6 @@
 package com.tempalych.europredictor.model.entity;
 
+import com.tempalych.europredictor.model.dto.PredictionValue;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,4 +33,10 @@ public class Prediction {
 
     @Column
     Integer visitorScore;
+
+    @Enumerated(EnumType.STRING)
+    PredictionValue predictionValue;
+
+    @Column
+    Integer predictionValueScore;
 }

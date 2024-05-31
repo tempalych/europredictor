@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" th:content="${_csrf.token}" />
+    <meta name="csrf-header" th:content="${_csrf.headerName}" />
+    <title>Admin - Input Match Results</title>
+    <link rel="stylesheet" href="/css/admin-styles.css">
+    <script src="https://unpkg.com/htmx.org@1.5.0"></script>
+</head>
+<body>
+<div class="admin-container">
+    <h1>Input Match Results</h1>
+    <table class="match-table">
+        <thead>
+        <tr>
+            <th>Group</th>
+            <th>Home Team</th>
+            <th>Visitor Team</th>
+            <th>Home Score</th>
+            <th>Visitor Score</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="match : ${matches}">
+            <td th:text="${match.groupName}"></td>
+            <td th:text="${match.homeTeam.name}"></td>
+            <td>
+                <input name="homeScore" th:value="${match.homeScore}" min="0"
+                       th:autocomplete="off">
+            </td>
+            <td>
+                <input name="visitorScore" th:value="${match.visitorScore}" min="0">
+            </td>
+            <td th:text="${match.visitorTeam.name}"></td>
+            <td>
+                <button type="button" class="submit-button"
+                        th:attr="hx-post=@{/admin/save-result},
+                                 hx-include='closest tr',
+                                 hx-swap='none',
+                                 hx-vals='js:{matchId:' + ${match.id} + '}'">
+                Submit
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div id="result-response"></div>
+</div>
+<script>
+    document.body.addEventListener('htmx:configRequest', (evt) => {
+        evt.detail.headers['accept'] = 'text/html-partial';
+        if (evt.detail.verb !== 'get') {
+            const csrfHeader = document.querySelector('meta[name=csrf-header]').getAttribute('content');
+            const csrfToken = document.querySelector('meta[name=csrf-token]').getAttribute('content');
+            if (csrfHeader != null && csrfToken != null) {
+                evt.detail.headers[csrfHeader] = csrfToken;
+            }
+        }
+    });
+</script>
+</body>
+</html>

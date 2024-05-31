@@ -1,6 +1,7 @@
 package com.tempalych.europredictor.service;
 
 import com.tempalych.europredictor.model.dto.MatchPredictionDto;
+import com.tempalych.europredictor.model.dto.PredictionValue;
 import com.tempalych.europredictor.model.entity.Prediction;
 import com.tempalych.europredictor.model.repository.MatchRepository;
 import com.tempalych.europredictor.model.repository.PredictionRepository;
@@ -46,5 +47,42 @@ public class PredictionService {
         var predictions = predictionRepository.findPredictionsByGroupAndUserId(groupName, user.getId());
         predictions.forEach(it -> it.setDisabled(LocalDateTime.now().isAfter(it.getTime().minusHours(1))));
         return predictions;
+    }
+
+    public PredictionValue calculatePredictionValue(int actualHomeScore, int actualVisitorScore,
+                                                    int predictionHomeScore, int predictionVisitorScore) {
+        if (actualHomeScore == predictionHomeScore && actualVisitorScore == predictionVisitorScore) {
+            return PredictionValue.GUESSED_EXACT_SCORE;
+        }
+
+        if (actualHomeScore - predictionHomeScore == actualVisitorScore - predictionVisitorScore &&
+                actualHomeScore != actualVisitorScore) {
+            return PredictionValue.GUESSED_WINNER_AND_SCORE_DIFFERENCE;
+        }
+
+        if ((actualHomeScore > actualVisitorScore && predictionHomeScore > predictionVisitorScore) ||
+                actualHomeScore < actualVisitorScore && predictionHomeScore < predictionVisitorScore) {
+            return PredictionValue.GUESSED_WINNER;
+        }
+
+        if (actualHomeScore == actualVisitorScore && predictionHomeScore == predictionVisitorScore) {
+            return PredictionValue.GUESSED_DRAW_BUT_NOT_SCORE;
+        }
+
+        return PredictionValue.GUESSED_NOTHING;
+    }
+
+    public void saveActualScore(Long matchId, Integer homeScore, Integer visitorScore) {
+        var match = matchRepository.getReferenceById(matchId);
+        match.setHomeScore(homeScore);
+        match.setVisitorScore(visitorScore);
+        matchRepository.save(match);
+        var predictions = predictionRepository.findByMatchId(matchId);
+        for (var prediction: predictions) {
+            var predictionValue = calculatePredictionValue(homeScore, visitorScore, prediction.getHomeScore(), prediction.getVisitorScore());
+            prediction.setPredictionValue(predictionValue);
+            prediction.setPredictionValueScore(predictionValue.score);
+        }
+        predictionRepository.saveAll(predictions);
     }
 }

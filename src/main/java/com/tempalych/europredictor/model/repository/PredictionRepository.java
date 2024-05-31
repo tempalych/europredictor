@@ -16,7 +16,7 @@ public interface PredictionRepository extends JpaRepository<Prediction, Long> {
     Prediction findByUserIdAndMatchId(Long userId, Long matchId);
 
     @Query("SELECT new com.tempalych.europredictor.model.dto.MatchPredictionDto(m.id, home_team.name, " +
-            "visitor_team.name, m.groupName, m.time, m.homeScore, m.visitorScore, p.homeScore, p.visitorScore, false) " +
+            "visitor_team.name, m.groupName, m.time, m.homeScore, m.visitorScore, p.homeScore, p.visitorScore, false, p.predictionValue) " +
             "FROM Match m " +
             "LEFT JOIN Prediction p on m.id = p.match.id and p.user.id = :userId " +
             "LEFT JOIN Team home_team on home_team.id = m.homeTeam.id " +
@@ -25,4 +25,8 @@ public interface PredictionRepository extends JpaRepository<Prediction, Long> {
             "ORDER BY m.time")
     List<MatchPredictionDto> findPredictionsByGroupAndUserId(@Param("groupName") String groupName,
                                                              @Param("userId") Long userId);
+
+    List<Prediction> findByMatchId(Long matchId);
+
+    List<Prediction> findByUserId(Long userId);
 }

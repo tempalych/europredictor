@@ -1,10 +1,9 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: Helvetica, sans-serif;
     background-color: #f5f5f5;
-    display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
+    text-align: center;
     height: 100vh;
     margin: 0;
 }
@@ -31,7 +30,6 @@ body {
     padding: 20px 40px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 300px;
     text-align: center;
 }
 
@@ -84,13 +82,14 @@ body {
 }
 
 .tabs {
-    display: grid;
+    display: flex;
     grid-template-columns: repeat(6, 1fr);
     gap: 10px;
     grid-auto-rows: minmax(100px, auto);
     cursor: pointer;
     text-align: center;
     font-size: 1.2em;
+    justify-content: center;
 }
 
 .tabs div:hover,
@@ -98,59 +97,7 @@ body {
     background-color: #ddd;
 }
 
-.tab0 {
-    grid-column: 1;
-    grid-row: 1;
-    text-decoration: none;
-    padding: 10px;
-    background-color: #f1f1f1;
-    border-radius: 5px;
-    color: #000;
-}
-
-.tab1 {
-    grid-column: 2;
-    grid-row: 1;
-    text-decoration: none;
-    padding: 10px;
-    background-color: #f1f1f1;
-    border-radius: 5px;
-    color: #000;
-}
-
-.tab2 {
-    grid-column: 3;
-    grid-row: 1;
-    text-decoration: none;
-    padding: 10px;
-    background-color: #f1f1f1;
-    border-radius: 5px;
-    color: #000;
-}
-
-.tab3 {
-    grid-column: 4;
-    grid-row: 1;
-    text-decoration: none;
-    padding: 10px;
-    background-color: #f1f1f1;
-    border-radius: 5px;
-    color: #000;
-}
-
-.tab4 {
-    grid-column: 5;
-    grid-row: 1;
-    text-decoration: none;
-    padding: 10px;
-    background-color: #f1f1f1;
-    border-radius: 5px;
-    color: #000;
-}
-
-.tab5 {
-    grid-column: 6;
-    grid-row: 1;
+.tab {
     text-decoration: none;
     padding: 10px;
     background-color: #f1f1f1;
@@ -204,6 +151,26 @@ body {
     width: 50px;
     text-align: center;
     font-size: 1.2em;
+}
+
+.additional-info {
+    grid-column: 1 / span 4;
+    text-align: center;
+    font-size: 1em;
+    color: gray;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.prediction-score {
+    grid-column: 1 / span 4;
+    text-align: center;
+    font-size: 1em;
+    color: forestgreen;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
 }
 
 button {
