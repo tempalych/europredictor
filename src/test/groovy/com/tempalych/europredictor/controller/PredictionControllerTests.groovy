@@ -152,6 +152,7 @@ class PredictionControllerTests extends Specification {
         when:
         def response =
                 mockMvc.perform(get("/group-matches?groupName=$group")
+                        .header("tzid", "UTC")
                         .with(httpBasic("user1", "111")))
                         .andExpect(status().isOk())
                         .andReturn().response
@@ -197,12 +198,14 @@ class PredictionControllerTests extends Specification {
         and: "Each user requests new page"
         def responseUser1 =
                 mockMvc.perform(get("/group-matches?groupName=A")
+                        .header("tzid", "UTC")
                         .with(httpBasic("user1", "111")))
                         .andExpect(status().isOk())
                         .andReturn().response
 
         def responseUser2 =
                 mockMvc.perform(get("/group-matches?groupName=A")
+                        .header("tzid", "UTC")
                         .with(httpBasic("user2", "222")))
                         .andExpect(status().isOk())
                         .andReturn().response

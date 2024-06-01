@@ -36,6 +36,7 @@
                 evt.detail.headers[csrfHeader] = csrfToken;
             }
         }
+        evt.detail.headers["tzid"] = Intl.DateTimeFormat().resolvedOptions().timeZone;
     });
 </script>
 </body>

@@ -22,9 +22,14 @@ public class MatchService {
         var id = 0L;
         for (var group: teams.stream().map(Team::getGroupName).collect(Collectors.toSet())) {
             var groupTeams = teams.stream().filter(team -> team.getGroupName().equals(group)).toList();
-            var groupNameWithFlags = group + "\n" +
-                    groupTeams.getFirst().getFlag() + groupTeams.get(1).getFlag() + "\n" +
-                    groupTeams.get(2).getFlag() + groupTeams.get(3).getFlag();
+            String groupNameWithFlags;
+            if (groupTeams.size() == 4) {
+                groupNameWithFlags = group + "\n" +
+                        groupTeams.getFirst().getFlag() + groupTeams.get(1).getFlag() + "\n" +
+                        groupTeams.get(2).getFlag() + groupTeams.get(3).getFlag();
+            } else {
+                groupNameWithFlags = group + "\n" + groupTeams.getFirst().getFlag() + groupTeams.getLast().getFlag();
+            }
             groups.add(new GroupDto(id, group, groupTeams, groupNameWithFlags));
             id++;
         }

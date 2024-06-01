@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @AllArgsConstructor
@@ -32,8 +33,8 @@ public class PredictionController {
     }
 
     @GetMapping("/group-matches")
-    public String getGroupMatches(@RequestParam String groupName, Model model) {
-        var matchPredictions = predictionService.getGroupMatchesWithUserPredictions(groupName);
+    public String getGroupMatches(@RequestParam String groupName, Model model, @RequestHeader String tzid) {
+        var matchPredictions = predictionService.getGroupMatchesWithUserPredictions(groupName, tzid);
         model.addAttribute("matchPredictions", matchPredictions);
         return "prediction/list";
     }

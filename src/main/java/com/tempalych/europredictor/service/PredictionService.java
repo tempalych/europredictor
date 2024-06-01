@@ -6,11 +6,13 @@ import com.tempalych.europredictor.model.entity.Prediction;
 import com.tempalych.europredictor.model.repository.MatchRepository;
 import com.tempalych.europredictor.model.repository.PredictionRepository;
 import com.tempalych.europredictor.model.repository.UserRepository;
+import com.tempalych.europredictor.utils.TimeUtils;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +20,8 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class PredictionService {
+
+    private static final Logger logger = LoggerFactory.getLogger(PredictionService.class);
 
     private final MatchRepository matchRepository;
     private final PredictionRepository predictionRepository;
@@ -47,10 +51,14 @@ public class PredictionService {
         predictionRepository.save(prediction);
     }
 
-    public List<MatchPredictionDto> getGroupMatchesWithUserPredictions(String groupName) {
+    public List<MatchPredictionDto> getGroupMatchesWithUserPredictions(String groupName, String timeZone) {
         var user = userService.getCurrentUser();
         var predictions = predictionRepository.findPredictionsByGroupAndUserId(groupName, user.getId());
-        predictions.forEach(it -> it.setDisabled(isPredictionEditRestricted(it.getHomeScore(), it.getVisitorScore(), it.getTime())));
+        predictions.forEach(it -> {
+            it.setDisabled(isPredictionEditRestricted(it.getHomeScore(), it.getVisitorScore(), it.getTime()));
+            var matchTimeAtUserTimeZone = TimeUtils.getTimeAtTimezone(it.getTime(), timeZone);
+            it.setTime(matchTimeAtUserTimeZone);
+        });
         return predictions;
     }
 
@@ -112,8 +120,8 @@ public class PredictionService {
         if (actualHomeScore != null || actualVisitorScore != null) {
             return true;
         }
-        var now = LocalDateTime.now().atZone(ZoneId.of("CET"));
-        var timeToRestrictMatchEdit = matchTime.minusHours(1).atZone(ZoneId.of("CET"));
+        var now = Instant.now();
+        var timeToRestrictMatchEdit = matchTime.minusHours(1).toInstant(ZoneOffset.UTC);
         return now.isAfter(timeToRestrictMatchEdit);
     }
 }
