@@ -2,7 +2,7 @@ package com.tempalych.europredictor.controller;
 
 import com.tempalych.europredictor.model.entity.Match;
 import com.tempalych.europredictor.model.repository.MatchRepository;
-import com.tempalych.europredictor.service.PredictionService;
+import com.tempalych.europredictor.service.AdminService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,7 @@ public class AdminController {
 
     private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
-    private final PredictionService predictionService;
+    private final AdminService adminService;
     private final MatchRepository matchRepository;
 
     @GetMapping("/page")
@@ -32,7 +32,7 @@ public class AdminController {
     @PostMapping("/save-result")
     public String saveMatchResult(@RequestParam Long matchId, @RequestParam Integer homeScore, @RequestParam Integer visitorScore, Model model) {
         logger.info("POST /save-actual-score: request: {}, {}, {}", matchId, homeScore, visitorScore);
-        predictionService.saveActualScore(matchId, homeScore, visitorScore);
+        adminService.saveActualScore(matchId, homeScore, visitorScore);
         return "redirect:/admin/page";
     }
 }

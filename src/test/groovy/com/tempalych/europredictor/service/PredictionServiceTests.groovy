@@ -14,11 +14,11 @@ import spock.lang.Specification
 class PredictionServiceTests extends Specification {
 
     @Autowired
-    PredictionService predictionService
+    AdminService adminService
 
     def "For prediction #pHome:#pVisitor and actual #aHome:#aVisitor value is #value"() {
         expect:
-        def result = predictionService.calculatePredictionValue(aHome, aVisitor, pHome, pVisitor)
+        def result = adminService.calculatePredictionValue(aHome, aVisitor, pHome, pVisitor)
         result.score == value
         result == predictionValue
         where:

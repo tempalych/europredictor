@@ -1,6 +1,7 @@
 package com.tempalych.europredictor.model.repository;
 
 import com.tempalych.europredictor.model.dto.MatchPredictionDto;
+import com.tempalych.europredictor.model.dto.ScoreTable;
 import com.tempalych.europredictor.model.entity.Prediction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -29,4 +30,11 @@ public interface PredictionRepository extends JpaRepository<Prediction, Long> {
     List<Prediction> findByMatchId(Long matchId);
 
     List<Prediction> findByUserId(Long userId);
+
+    @Query("SELECT new com.tempalych.europredictor.model.dto.ScoreTable(u.username, sum(p.predictionValueScore)) " +
+            "FROM Prediction p " +
+            "JOIN User u on u = p.user " +
+            "GROUP BY u.username " +
+            "ORDER BY sum(p.predictionValueScore) DESC")
+    List<ScoreTable> getTable();
 }
