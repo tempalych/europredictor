@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -86,13 +87,15 @@ public class AdminService {
                 .append(match.getHomeTeam().getName())
                 .append(" ").append(homeScore).append(":").append(visitorScore).append(" ")
                 .append(match.getVisitorTeam().getName()).append("\n");
+        matchPredictions.sort(Comparator
+                .comparingLong(Prediction::getPredictionValueScore).reversed()
+                .thenComparingLong(p -> p.getUser().getId()));
         for (var prediction: matchPredictions) {
             var username = prediction.getUser().getUsername();
             if ("admin".equals(username)) {
                 username = "🤖";
             }
-            message.append(username)
-                    .append(" Prediction ")
+            message.append("<b>").append(username).append("</b> ")
                     .append(prediction.getHomeScore())
                     .append(":")
                     .append(prediction.getVisitorScore())

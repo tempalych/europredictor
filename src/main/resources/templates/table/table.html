@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Players Scores</title>
+    <link rel="stylesheet" href="/css/styles.css">
+<!--    <script src="https://unpkg.com/htmx.org@1.5.0"></script>-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="nav-container">
+    <a href="/predictions" class="nav-link">Go to Predictions</a>
+</div>
+<div class="scores-container">
+
+    <table class="players-table">
+        <thead>
+        <tr>
+            <th>Username</th>
+            <th>Total Score</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="player, iterStat : ${players}">
+            <td th:text="${player.name}"></td>
+            <td th:text="${player.points}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="chart-container">
+    <canvas id="userPositionsChart" width="4" height="1"></canvas>
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('userPositionsChart').getContext('2d');
+        const userPositionsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [[${labels}]],
+                datasets: [
+                    /*[# th:each="user : ${users}"]*/
+                    {
+                        label: [[${user.name}]],
+                        data: [[${user.points}]],
+                        borderColor: [[${user.color}]],
+                        borderWidth: 5,
+                        tension: 0.4,
+                    },
+                    /*[/]*/
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        // reverse: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    });
+    /*]]>*/
+</script>
+</body>
+</html>

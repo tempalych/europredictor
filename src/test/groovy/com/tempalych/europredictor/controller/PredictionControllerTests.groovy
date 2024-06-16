@@ -7,6 +7,7 @@ import com.tempalych.europredictor.model.entity.Match
 import com.tempalych.europredictor.model.entity.Team
 import com.tempalych.europredictor.model.entity.User
 import com.tempalych.europredictor.model.entity.UserRole
+import com.tempalych.europredictor.model.repository.BotMessageRepository
 import com.tempalych.europredictor.model.repository.MatchRepository
 import com.tempalych.europredictor.model.repository.PredictionRepository
 import com.tempalych.europredictor.model.repository.TeamRepository
@@ -54,6 +55,8 @@ class PredictionControllerTests extends Specification {
     MatchRepository matchRepository
     @Autowired
     PredictionRepository predictionRepository
+    @Autowired
+    BotMessageRepository botMessageRepository
 
     def setup() {
         this.mockMvc = webAppContextSetup(this.context)
@@ -70,6 +73,7 @@ class PredictionControllerTests extends Specification {
                 .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build()
 
+        botMessageRepository.deleteAll()
         predictionRepository.deleteAll()
         matchRepository.deleteAll()
         teamRepository.deleteAll()
@@ -289,6 +293,55 @@ class PredictionControllerTests extends Specification {
 
         predictions.findAll { (it.getMatch().getId() == matchId5) }[0].getPredictionValue() == PredictionValue.GUESSED_NOTHING
         predictions.findAll { (it.getMatch().getId() == matchId5) }[0].getPredictionValueScore() == 0
+
+        and: "Bot messages has been prepared"
+        def botMessages = botMessageRepository.findAll().sort{it -> it.getId()}
+        botMessages.size() == 5
+
+        botMessages[0].message == "Match is over: Hungary 1:0 Switzerland\n" +
+                "<b>user1</b> 1:0 Correct score guessed (+3)\n" +
+                "<b>user2</b> null:null No prediction made (+0)\n" +
+                "<b>🤖</b> null:null No prediction made (+0)\n" +
+                "\n" +
+                "user1: 3\n" +
+                "user2: 0\n" +
+                "🤖: 0\n"
+
+        botMessages[1].message == "Match is over: Germany 2:1 Hungary\n" +
+                "<b>user1</b> 1:0 Guessed winner and goal difference (+2)\n" +
+                "<b>user2</b> null:null No prediction made (+0)\n" +
+                "<b>🤖</b> null:null No prediction made (+0)\n" +
+                "\n" +
+                "user1: 5\n" +
+                "user2: 0\n" +
+                "🤖: 0\n"
+
+        botMessages[2].message == "Match is over: Scotland 2:0 Switzerland\n" +
+                "<b>user1</b> 1:0 Guessed winner (+1)\n" +
+                "<b>user2</b> null:null No prediction made (+0)\n" +
+                "<b>🤖</b> null:null No prediction made (+0)\n" +
+                "\n" +
+                "user1: 6\n" +
+                "user2: 0\n" +
+                "🤖: 0\n"
+
+        botMessages[3].message == "Match is over: Switzerland 2:2 Germany\n" +
+                "<b>user1</b> 0:0 Guessed a draw, but not the score (+1)\n" +
+                "<b>user2</b> null:null No prediction made (+0)\n" +
+                "<b>🤖</b> null:null No prediction made (+0)\n" +
+                "\n" +
+                "user1: 7\n" +
+                "user2: 0\n" +
+                "🤖: 0\n"
+
+        botMessages[4].message == "Match is over: Scotland 0:1 Hungary\n" +
+                "<b>user1</b> 1:0 Match result is not guessed (+0)\n" +
+                "<b>user2</b> null:null No prediction made (+0)\n" +
+                "<b>🤖</b> null:null No prediction made (+0)\n" +
+                "\n" +
+                "user1: 7\n" +
+                "user2: 0\n" +
+                "🤖: 0\n"
     }
 
     private void createUsers() {

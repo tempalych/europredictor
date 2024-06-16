@@ -2,6 +2,7 @@ package com.tempalych.europredictor.bot;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -36,6 +37,7 @@ public class Bot extends TelegramLongPollingBot {
 
     public void sendText(String what){
         SendMessage sm = SendMessage.builder()
+                .parseMode(ParseMode.HTML)
                 .chatId(chatId)
                 .text(what).build();
         try {
