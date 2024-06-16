@@ -30,7 +30,7 @@
     </table>
 </div>
 <div class="chart-container">
-    <canvas id="userPositionsChart" width="4" height="1"></canvas>
+    <canvas id="userPositionsChart" width="2" height="1"></canvas>
 </div>
 <script th:inline="javascript">
     /*<![CDATA[*/
@@ -46,7 +46,7 @@
                         label: [[${user.name}]],
                         data: [[${user.points}]],
                         borderColor: [[${user.color}]],
-                        borderWidth: 5,
+                        borderWidth: 2,
                         tension: 0.4,
                     },
                     /*[/]*/

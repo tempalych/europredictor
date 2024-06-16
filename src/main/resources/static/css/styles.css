@@ -201,7 +201,7 @@ button:hover {
     /*max-width: 1000px;*/
     text-align: center;
     align-items: center;
-    display: flex;
+    /*display: flex;*/
 }
 
 .scores-container h1 {
