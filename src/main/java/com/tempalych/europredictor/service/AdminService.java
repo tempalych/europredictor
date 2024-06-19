@@ -27,7 +27,7 @@ public class AdminService {
     private final BotMessageRepository botMessageRepository;
 
     public void saveActualScore(Long matchId, Integer homeScore, Integer visitorScore) {
-        var match = matchRepository.getReferenceById(matchId);
+        var match = matchRepository.findById(matchId).get();
         match.setHomeScore(homeScore);
         match.setVisitorScore(visitorScore);
         matchRepository.save(match);
